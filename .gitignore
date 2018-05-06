@@ -1,0 +1,4 @@
+exit
+.idea
+cmake-build-debug/lab2
+cmake-build-debug/CMakeFiles
