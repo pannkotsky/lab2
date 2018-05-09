@@ -28,6 +28,7 @@ public:
     License(License &l);
     License(str fn, str ln, uint n, uint s, uint y, uint m, uint d);
     ~License();
+    static License *create_safe(str fn, str ln, uint n, uint s, uint y, uint m, uint d);
     char *get_first_name() { return first_name; }
     char *get_last_name() { return last_name; }
     char *get_full_name() {
@@ -38,7 +39,12 @@ public:
     uint get_number() { return number; }
     uint get_salary() { return salary; }
     Date get_date() { return date_valid; }
-    static License *create_safe(str fn, str ln, uint n, uint s, uint y, uint m, uint d);
+    operator int() { return salary; }
+    int operator+(License *l) { return int(*this) + int(*l); }
+    int operator+(int x) { return int(*this) + x; }
+    friend int operator+(int x, License &l) { return x + int(l); }
+    friend int operator+=(int &x, License &l) { return x += int(l); }
+    License &operator=(const License &l);
     void display();
 };
 
@@ -126,6 +132,24 @@ License *License::create_safe(str fn, str ln, uint n, uint s, uint y, uint m, ui
         printw("Couldn't create SaleEntity: %s", e.what());
         return nullptr;
     }
+}
+
+
+License &License::operator=(const License &l) {
+    if (this == &l) return *this;
+
+    delete[] first_name;
+    first_name = new char[strlen(l.first_name) + 1];
+    strcpy(first_name, l.first_name);
+
+    delete[] last_name;
+    last_name = new char[strlen(l.last_name) + 1];
+    strcpy(last_name, l.last_name);
+
+    number = l.number;
+    salary = l.salary;
+    date_valid = l.date_valid;
+    return *this;
 }
 
 

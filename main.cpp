@@ -13,7 +13,7 @@ const char *choices[] = {
         "Add license with params",
         "Copy existing license",
         "View licenses",
-        "Raise salary for all employees",
+        "Copy one license data into another",
         "Exit",
         (char *)nullptr,
 };
@@ -26,6 +26,7 @@ void create_license(LicensesList *ll);
 void print_licenses(LicensesList *ll);
 void copy_license(LicensesList *ll);
 int get_license_index_with_menu(LicensesList *ll);
+void copy_license_data(LicensesList *ll);
 
 
 int main() {
@@ -80,6 +81,9 @@ int main() {
                         break;
                     case 3:
                         print_licenses(&licenses_list);
+                        break;
+                    case 4:
+                        copy_license_data(&licenses_list);
                         break;
                     case 5:
                         exit = true;
@@ -180,10 +184,16 @@ void print_licenses(LicensesList *ll) {
            "Salary, UAH", VERTICAL, "Date valid", VERTICAL);
     printTableMiddle(5, column_sizes);
     int size = ll->get_length();
+    int total_salary = 0;
+    License *l;
     for (int i = 0; i < size; i++) {
-        (*ll)[i]->display();
+        l = (*ll)[i];
+        l->display();
+        total_salary += *l;
     }
     printTableBottom(5, column_sizes);
+    printw("Total salary: %.2f UAH", total_salary / 100.0);
+
 }
 
 
@@ -266,4 +276,31 @@ int get_license_index_with_menu(LicensesList *ll) {
     free_menu(menu);
 
     return index;
+}
+
+
+void copy_license_data(LicensesList *ll) {
+    move(15, 0);
+    clrtobot();
+
+    move(17, 0);
+    printw("License to copy data from: ");
+    int index_from = get_license_index_with_menu(ll);
+    if (index_from == -1) return;
+
+    move(17, 0);
+    clrtobot();
+    printw("License to copy data to: ");
+    int index_to = get_license_index_with_menu(ll);
+    if (index_to == -1) return;
+
+    License *l_from = (*ll)[index_from];
+    License *l_to = (*ll)[index_to];
+
+    *l_to = *l_from;
+    move(15, 0);
+    clrtobot();
+    attron(COLOR_PAIR(1));
+    printw("Data copied created successfully!");
+    attroff(COLOR_PAIR(1));
 }
